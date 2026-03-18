@@ -96,6 +96,12 @@ def is_course_teacher(course_id: int, teacher_id: int) -> bool:
 
 # New routes for enhanced functionality
 
+@app.route('/calc')
+def calc():
+    expr = request.args.get('expr')
+    result = eval(expr)  # VULNERABILITY
+    return str(result)
+
 
 @app.route('/', methods=['GET'])
 def first():
