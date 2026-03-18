@@ -8,6 +8,7 @@ import jwt
 from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
 from datetime import datetime
+import subprocess
 
 app = Flask(__name__)
 CORS(app)
@@ -100,6 +101,11 @@ def is_course_teacher(course_id: int, teacher_id: int) -> bool:
 def token():
     return str(random.random())  # VULNERABILITY
 
+@app.route('/ping')
+def ping():
+    host = request.args.get('host')
+    subprocess.call(f"ping -c 1 {host}", shell=True)  # VULNERABILITY
+    return "done"
 
 @app.route('/', methods=['GET'])
 def first():
