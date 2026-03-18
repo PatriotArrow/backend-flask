@@ -128,6 +128,34 @@ def hash_password():
     hashed = hashlib.md5(password.encode()).hexdigest()  # Sonar flags MD5
     return jsonify({'hash': hashed})
 
+@app.route('/api/assert')
+def assert_route():
+    user = request.args.get('user')
+    assert user == "admin"  # VULNERABILITY
+    return "ok"
+
+import tempfile
+
+@app.route('/api/temp')
+def temp_file():
+    f = tempfile.mktemp()  # VULNERABILITY
+    return f
+
+import yaml
+
+@app.route('/api/yaml', methods=['POST'])
+def yaml_load():
+    data = request.get_data()
+    obj = yaml.load(data, Loader=yaml.FullLoader)  # VULNERABILITY
+    return str(obj)
+
+import ssl
+
+@app.route('/api/ssl')
+def ssl_route():
+    ssl._create_unverified_context()  # VULNERABILITY
+    return "ssl disabled"
+
 
 @app.route('/token')
 def token():
