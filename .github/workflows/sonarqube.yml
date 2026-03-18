@@ -34,7 +34,7 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }} # Add in repo secrets
         with:
           args: >
-            -Dsonar.projectKey=PatriotArrow_frontend-react
+            -Dsonar.projectKey=PatriotArrow_backend-flask
             -Dsonar.organization=patriotarrow
             -Dsonar.sources=.
 
