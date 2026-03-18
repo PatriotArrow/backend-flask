@@ -12,6 +12,8 @@ import subprocess
 import pickle
 import base64
 import hashlib
+import tempfile
+import yaml
 
 
 
@@ -134,14 +136,19 @@ def assert_route():
     assert user == "admin"  # VULNERABILITY
     return "ok"
 
-import tempfile
+
 
 @app.route('/api/temp')
 def temp_file():
     f = tempfile.mktemp()  # VULNERABILITY
-    return f
+    return f    
 
-import yaml
+
+
+@app.route('/hello')
+def hello():
+    name = request.args.get('name')
+    return f"Hello {name}"  # VULNERABILITY (Reflected XSS)
 
 @app.route('/api/yaml', methods=['POST'])
 def yaml_load():
