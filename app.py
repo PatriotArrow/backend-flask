@@ -8,6 +8,12 @@ import jwt
 from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
 from datetime import datetime
+import subprocess
+import pickle
+import base64
+import hashlib
+
+
 
 app = Flask(__name__)
 CORS(app)
@@ -96,10 +102,42 @@ def is_course_teacher(course_id: int, teacher_id: int) -> bool:
 
 # New routes for enhanced functionality
 
+@app.route('/api/load-object', methods=['POST'])
+def load_object():
+    data = request.get_json().get('data')
+    obj = pickle.loads(base64.b64decode(data))  # Sonar flags this
+    return jsonify({'loaded': str(obj)})
+
+
+@app.route('/api/eval', methods=['POST'])
+def eval_route():
+    code = request.get_json().get('code')
+    result = eval(code)  # VULNERABILITY
+    return jsonify({'result': result})
+
+@app.route('/api/env-leak')
+def env_leak():
+    # Sonar flags: exposing secrets from environment
+    return jsonify({'secret': os.environ.get('SECRET_KEY')})
+
+
+
+@app.route('/api/hash-password', methods=['POST'])
+def hash_password():
+    password = request.get_json().get('password')
+    hashed = hashlib.md5(password.encode()).hexdigest()  # Sonar flags MD5
+    return jsonify({'hash': hashed})
+
+
 @app.route('/token')
 def token():
     return str(random.random())  # VULNERABILITY
 
+@app.route('/ping')
+def ping():
+    host = request.args.get('host')
+    subprocess.call(f"ping -c 1 {host}", shell=True)  # VULNERABILITY
+    return "done"
 
 @app.route('/', methods=['GET'])
 def first():
